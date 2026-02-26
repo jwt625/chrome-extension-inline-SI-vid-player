@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Inline Supplementary Video Player",
+  "version": "1.0.0",
+  "description": "Play supplementary videos inline on academic paper pages instead of downloading them",
+  "permissions": [
+    "activeTab",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "*://*.nature.com/*",
+    "*://*.springer.com/*",
+    "*://*.science.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.nature.com/*",
+        "*://*.springer.com/*",
+        "*://*.science.org/*"
+      ],
+      "js": ["content.js"],
+      "css": ["player.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["ffmpeg/ffmpeg.js", "ffmpeg/ffmpeg-core.js", "ffmpeg/ffmpeg-core.wasm", "ffmpeg/814.ffmpeg.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}
+
