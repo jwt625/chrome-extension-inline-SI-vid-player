@@ -10,7 +10,8 @@
   "host_permissions": [
     "*://*.nature.com/*",
     "*://*.springer.com/*",
-    "*://*.science.org/*"
+    "*://*.science.org/*",
+    "*://*.aps.org/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -21,7 +22,8 @@
       "matches": [
         "*://*.nature.com/*",
         "*://*.springer.com/*",
-        "*://*.science.org/*"
+        "*://*.science.org/*",
+        "*://*.aps.org/*"
       ],
       "js": ["content.js"],
       "css": ["player.css"],
@@ -43,4 +45,3 @@
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }
 }
-

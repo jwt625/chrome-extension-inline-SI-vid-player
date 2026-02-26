@@ -607,6 +607,50 @@
     });
   }
 
+  // Replace video links on APS / Phys Rev journals
+  function replaceAPSVideoLinks() {
+    const suppItems = document.querySelectorAll('.supplemental-file');
+
+    suppItems.forEach((item) => {
+      // Prefer the textual link in the right block; fall back to any video-marked media link.
+      const videoLinks = item.querySelectorAll('a.media-link[data-type="video"]');
+      const link = Array.from(videoLinks).find((el) => el.classList.contains('default-link')) || videoLinks[0];
+      if (!link) {
+        return;
+      }
+
+      const rawHref = link.getAttribute('href');
+      if (!rawHref) {
+        return;
+      }
+
+      const href = rawHref.startsWith('/') ? window.location.origin + rawHref : rawHref;
+      if (!isVideoLink(href)) {
+        return;
+      }
+
+      // Avoid duplicate injection on reruns.
+      if (item.querySelector('.svp-video-player-container')) {
+        return;
+      }
+
+      const title = link.textContent.trim() || link.getAttribute('data-id') || 'Supplementary video';
+      const playerContainer = createVideoPlayer(href, '');
+
+      const rightBlock = item.querySelector('.supplemental-file-right-block');
+      if (rightBlock) {
+        const titleRow = rightBlock.querySelector('a.media-link.default-link');
+        if (titleRow) {
+          titleRow.textContent = title;
+          titleRow.removeAttribute('href');
+        }
+        rightBlock.appendChild(playerContainer);
+      } else {
+        item.appendChild(playerContainer);
+      }
+    });
+  }
+
   // Initialize
   function init() {
 
@@ -615,6 +659,8 @@
 
     if (hostname.includes('science.org')) {
       replaceScienceVideoLinks();
+    } else if (hostname.includes('journals.aps.org')) {
+      replaceAPSVideoLinks();
     } else {
       // Nature/Springer
       replaceVideoLinks();
@@ -626,7 +672,9 @@
 
     const scanHandler = hostname.includes('science.org')
       ? replaceScienceVideoLinks
-      : replaceVideoLinks;
+      : (hostname.includes('journals.aps.org')
+        ? replaceAPSVideoLinks
+        : replaceVideoLinks);
 
     const observer = new MutationObserver(() => {
       // Only run observer callback once, shortly after page load
@@ -655,4 +703,3 @@
   }
 
 })();
-
